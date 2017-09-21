@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const dbName = 'ex-auth';
+const dbName = 'addtripper-db';
 const dbUri = `mongodb://localhost/${dbName}`;
 
 mongoose.connect(dbUri, { useMongoClient: true });

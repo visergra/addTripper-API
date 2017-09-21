@@ -10,11 +10,15 @@ var cors = require('cors');
 
 require('./configs/db.config');
 require('./configs/passport.config').setup(passport);
+var corsOptions = require('./configs/cors.config');
 
 var authRoutes = require('./routes/auth.route');
-var messagesRoutes = require('./routes/messages.route');
+var usersRoutes = require('./routes/users.route');
+var tripsRoutes = require('./routes/trips.route');
 
 var app = express();
+
+app.use(cors(corsOptions));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -31,11 +35,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cors());
-
 const apiPrefix = '/api'
 app.use(`${apiPrefix}`, authRoutes);
-app.use(`${apiPrefix}`, messagesRoutes);
+app.use(`${apiPrefix}`, usersRoutes);
+app.use(`${apiPrefix}`, tripsRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

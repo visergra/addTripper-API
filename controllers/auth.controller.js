@@ -27,14 +27,23 @@ module.exports.postLogin = (req, res, next) =>  {
 }
 
 module.exports.postLogout = (req, res, next) => {
-    // TODO: logout user
-    return res.status(204).json({ message: 'TODO' });
+    req.logout();
+    req.session.destroy(function (err) {
+        if (err) { return next(err); }
+        return res.status(204).send();
+    });
 }
 
 module.exports.postRegister = (req, res, next) => {
     const user = new User({
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        name: req.body.name,
+        firstname: req.body.firstname,
+        nickname: req.body.nickname,
+        country: req.body.country,
+        about_you: req.body.about_you,
+        profile_pic: req.body.profile_pic
     });
 
     if (!user.username || !user.password) {
@@ -48,8 +57,12 @@ module.exports.postRegister = (req, res, next) => {
                 user.save((err) => {
                     if (err) { return next(err) }
                     else {
-                        // TODO: auth user
-                        return res.status(201).json(user); 
+                        req.login(user, (err) => {
+                            if (err) { return next(err) }
+                            else {
+                                return res.status(200).json(req.user);
+                            }
+                        });
                     }
                 });
             }

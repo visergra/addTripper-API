@@ -37,6 +37,9 @@ module.exports.setup = (passport) => {
 }
 
 module.exports.isAuthenticated = (req, res, next) => {
-    // TODO: check req auth
-    return next();
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        return res.status(403).json({ message: 'Forbidden'});
+    }
 }

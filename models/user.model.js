@@ -6,11 +6,35 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         unique: true,
-        required: 'The username is required'
+        required: [true, 'The username is required']
     },
     password: {
         type: String,
-        required: 'The password is required'
+        required: [true, 'The password is required']
+    },
+    name: {
+        type: String,
+        required: [true, 'The name is required']
+    },
+    firstname: {
+        type: String,
+        required: [true, 'The firstname is required']
+    },
+    nickname: {
+        type: String,
+        unique: true,
+        required: [true, 'The nickname is required']
+    },
+    country: {
+        type: String,
+        required: [true, 'The country is required']
+    },
+    about_you: {
+        type: String,
+        required: [true, 'The about you is required']
+    },
+    profile_pic: {
+        type: String
     }
 }, {timestamps: true});
 
