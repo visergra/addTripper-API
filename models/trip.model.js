@@ -29,12 +29,6 @@ const tripSchema = new mongoose.Schema({
         ref: 'User',
         require: [true, 'Trip needs a owner']
     },
-    // assistants: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: 'User'
-    //     }
-    // ],
     open_registration: {
         type: Boolean
      },
