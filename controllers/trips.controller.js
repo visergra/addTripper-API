@@ -24,28 +24,38 @@ module.exports.edit = (req, res, next) => {
 }
 
 module.exports.register = (req, res, next) => {
-    Trip.find({ $and: [{ '_id': req.param.id}, {$or: [{'owner._id': req.body.assistant}, {'applications.assistant._id': req.body.assistant }]}]})
-        .then(trip => {
-            if (!trip) {
-                Trip.findByIdAndUpdate(req.params.id, {
-                        $addTosSet: req.body
-                    }, {
-                        new: true
-                    })
-                    .then(trip => {
-                        if (!trip) {
-                            res.status(404).json({ message: 'The trip does not exist' });
-                        } else {
-                            res.status(200).json(trip)
-                        }
-                    })
-                    .catch(err => next(err));
-            } else {
-                res.status(404).json({ message: 'The assistant is already registered or is the owner' });
-            }
-        })
+    let criteria = { "_id": req.params.id, "owner":{ "$ne": req.body.assistant}, "applications.assistant": { "$ne": req.body.assistant}}
+    Trip.findOneAndUpdate(criteria,{ "$addToSet": {"applications": { "assistant": req.body.assistant, "status": 'OPEN' }}}, { new: true })                           
+    .populate('owner')
+    .populate('applications.assistant')
+    .then(trip => {
+        if (!trip) {
+            res.status(404).json({message: 'The user is already assistant or owner'});
+        } else {
+            res.status(200).json(trip)
+        }
+    })
         .catch(err => next(err));
+}
 
+module.exports.approve = (req, res, next) => {
+    let criteria = { "_id": req.params.id, "applications.assistant": req.body.assistant}
+
+    Trip.update(criteria, {'$set': { 'applications.$.status': 'APPROVED' }})
+        .populate('owner')
+        .populate('applications.assistant')
+        .then(trip => { res.status(200).json(trip) })
+        .catch(err => next(err));
+}
+
+module.exports.reject = (req, res, next) => {
+    let criteria = { "_id": req.params.id, "applications.assistant": req.body.assistant}
+
+    Trip.update(criteria, {'$set': { 'applications.$.status': 'REJECTED' }})
+        .populate('owner')
+        .populate('applications.assistant')
+        .then(trip => { res.status(200).json(trip) })
+        .catch(err => next(err));
 }
 
 module.exports.getAll = (req, res, next) => {
@@ -57,7 +67,7 @@ module.exports.getAll = (req, res, next) => {
 }
 
 module.exports.get = (req, res, next) => {
-    Trip.find(req.param.id)
+    Trip.find(req.params.id)
         .populate('owner')
         .populate('applications.assistant')
         .then(trip => res.status(200).json(trip))

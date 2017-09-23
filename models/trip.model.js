@@ -39,7 +39,7 @@ const tripSchema = new mongoose.Schema({
         type: Number
      },
      applications: [
-         { status: { type: String, enum: ['OPEN', 'Approved', 'Rejected'], required: true , default: 'Open'},
+         { status: { type: String, enum: ['OPEN', 'APPROVED', 'REJECTED'], required: true , default: 'Open'},
          assistant: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
         }
      ],
